@@ -1,0 +1,56 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id             String   @id @default(auto()) @map("_id") @db.ObjectId
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    name           String
+    surname        String
+    email          String   @unique
+    phoneNumber    String   @unique
+    hashedPassword String
+}
+
+model City {
+    id       String     @id @default(auto()) @map("_id") @db.ObjectId
+    name     String
+    counties County[]
+    Projects Projects[]
+}
+
+model County {
+    id       String     @id @default(auto()) @map("_id") @db.ObjectId
+    name     String
+    cityId   String     @db.ObjectId
+    City     City       @relation(fields: [cityId], references: [id])
+    Projects Projects[]
+}
+
+model Brandings {
+    id        String     @id @default(auto()) @map("_id") @db.ObjectId
+    createdAt DateTime   @default(now())
+    name      String
+    color     String
+    Projects  Projects[]
+}
+
+model Projects {
+    id          String    @id @default(auto()) @map("_id") @db.ObjectId
+    createdAt   DateTime  @default(now())
+    name        String
+    description String
+    photoLinks  String[]
+    City        City      @relation(fields: [cityId], references: [id])
+    cityId      String    @db.ObjectId
+    County      County    @relation(fields: [countyId], references: [id])
+    countyId    String    @db.ObjectId
+    Brandings   Brandings @relation(fields: [brandingsId], references: [id])
+    brandingsId String    @db.ObjectId
+}

@@ -55,15 +55,13 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
     setValue("id", currentBrand?.id)
   }, [currentBrand])
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    console.log(data)
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
-      const response = axios.post("/api/brandings/update", data)
-      response.then((res) => {
+      const response = await axios.post("/api/brandings/update", data)
+      if (response.status === 200) {
         toast.success("Marka güncellendi", {})
-      }).then(() => {
         router.push("/admin/markalar")
-      })
+      }
     } catch (error) {
       toast.error("Sunucu hatası oluştu, Lütfen daha sonra tekrar deneyin", {})
     }

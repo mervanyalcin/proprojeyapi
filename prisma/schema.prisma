@@ -54,3 +54,21 @@ model Projects {
     Brandings   Brandings @relation(fields: [brandingsId], references: [id])
     brandingsId String    @db.ObjectId
 }
+
+model Dealer {
+    id          String  @id @default(auto()) @map("_id") @db.ObjectId
+    fullName    String
+    companyName String
+    address     String
+    phoneNumber String
+    email       String
+    isReaded    Boolean @default(false)
+}
+
+model Messages {
+    id          String  @id @default(auto()) @map("_id") @db.ObjectId
+    fullName    String
+    phoneNumber String
+    message     String
+    isReaded    Boolean @default(false)
+}

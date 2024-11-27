@@ -1,6 +1,7 @@
 "use client"
 
 import ConfirmModal from '@/app/components/modals/ConfirmModal'
+import { ProjectWBranding } from '@/app/types'
 import { Projects } from '@prisma/client'
 import axios from 'axios'
 import Link from 'next/link'
@@ -12,7 +13,7 @@ import { toast } from 'react-toastify'
 
 const page = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [allProjects, setAllProjects] = useState<Projects[]>([])
+  const [allProjects, setAllProjects] = useState<ProjectWBranding[]>([])
   const [selectedProject, setSelectedProject] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -98,6 +99,7 @@ const page = () => {
             {allProjects.map((project, index) => (
               <div key={index} className="py-3 flex items-center justify-between hover:bg-gray-50">
                 <span className="uppercase">{project.name}</span>
+                <span className="capitalize">{project.Brandings.name}</span>
                 <div className="flex gap-3">
                   <button
                     className="p-1 text-blue-600 hover:text-blue-800 rounded-full hover:bg-blue-100"

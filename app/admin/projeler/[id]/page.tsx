@@ -51,6 +51,8 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
             })
             setSelectedCityId(response.data.cityId)
             setSelectedCountyId(response.data.countyId)
+            console.log(response.data.photoLinks)
+            setPreviewUrls(response.data.photoLinks)
         } catch (error) {
             toast.error("Sunucu hatası oluştu, Lütfen daha sonra tekrar deneyin", {
                 position: "top-right",
@@ -134,7 +136,7 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
                 })
             )
             // Projeyi veritabanına kaydet
-            const response = await axios.post('/api/projects/create', {
+            const response = await axios.post('/api/projects/update', {
                 name: data.name,
                 description: data.description,
                 images: imageUrls,
@@ -211,7 +213,7 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
 
                 <div className="">
                     <label htmlFor="brand" className="block mb-2 text-sm font-bold">Markayı Seçiniz</label>
-                    <select id="brandingsId" {...register("brandingsId", { required: true })} className=' capitalize border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5'>
+                    <select id="brandingsId" {...register("brandingsId", { required: true })} value={watch("brandingsId")} className=' capitalize border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5'>
                         <option value={""}>Markayı Seçiniz</option>
                         {
                             brandings.map((brand, index) =>

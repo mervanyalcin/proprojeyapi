@@ -57,11 +57,13 @@ const ProjectForm = () => {
       const imageUrls = await Promise.all(
         Array.from(data.images).map(async (image) => {
           const formData = new FormData()
-          formData.append('file', image as File)
+          formData.append('file', image as File) 
           const response = await axios.post('/api/upload', formData)
           return response.data.url
         })
       )
+
+
       // Projeyi veritabanına kaydet
       await axios.post('/api/projects/create', {
         name: data.name,
@@ -120,8 +122,6 @@ const ProjectForm = () => {
   useEffect(() => {
     getCounties()
   }, [getCounties])
-
-
   useEffect(() => {
     if (selectedCityId !== "" && selectedCityId !== null && cities.length !== 0) {
       if (selectedCityId === "") {

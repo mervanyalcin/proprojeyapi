@@ -33,7 +33,7 @@ const page = () => {
             </Link>
 
 
-            <Link href={"/prokast-hafifletilmis-prekast"} className='w-1/4 h-96'>
+            <Link href={"/prokast-hafif-prekast"} className='w-1/4 h-96'>
               <div className="w-full h-full group relative cursor-pointer overflow-hidden bg-white shadow-xl ring-1 ring-gray-900/5 transition-all hover:shadow-2xl duration-1000 ">
                 <span className="absolute duration-1000 bottom-10 left-10 z-10 bg-sky-500 w-60 h-12 flex items-center justify-center text-white">
                   PROKAST Hafifletilmiş Prekast

@@ -50,9 +50,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   };
 
 
-  if (isLoading === true) {
-    return <Loading />
-  }
+ 
 
   return (
     <Container>

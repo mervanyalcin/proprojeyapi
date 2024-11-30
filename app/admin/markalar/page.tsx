@@ -1,7 +1,9 @@
 "use client"
 
+import FileUploader from '@/app/components/FileUploader';
 import Loading from '@/app/components/Loading';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
+import UpdateBrandImage from '@/app/components/modals/UpdateBrandImageModal';
 import { Brandings } from '@prisma/client';
 import axios from 'axios';
 import Link from 'next/link';
@@ -10,16 +12,19 @@ import { BiPencil } from 'react-icons/bi';
 import { BsTrash2 } from 'react-icons/bs';
 import { FaEdit, FaPlus } from 'react-icons/fa';
 import { FaDeleteLeft } from 'react-icons/fa6';
+import { MdAddAPhoto } from 'react-icons/md';
 import { toast } from 'react-toastify';
 
 const page = () => {
 
   const [allBrandings, setAllBrandings] = useState<Brandings[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(1);
+
   const [selectedBranding, setSelectedBranding] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isImageUpdateModalOpen, setIsImageUpdateModalOpen] = useState(false)
 
 
   const handleDeleteBrand = useCallback(async (id: string) => {
@@ -95,6 +100,16 @@ const page = () => {
             </div>
             <div className="flex gap-3">
               <button
+                className="p-1 text-emerald-600 hover:text-emerald-800 rounded-full hover:bg-emerald-100"
+                title="fotoğrafı değiştir"
+                onClick={() => {
+                  setSelectedBranding(brand.id)
+                  setIsImageUpdateModalOpen(true)
+                }}
+              >
+                <MdAddAPhoto size={18} />
+              </button>
+              <button
                 className="p-1 text-blue-600 hover:text-blue-800 rounded-full hover:bg-blue-100"
                 title="Düzenle"
               >
@@ -112,6 +127,7 @@ const page = () => {
           </div>
         ))}
       </div>
+
 
       <ConfirmModal
         isModalOpen={isModalOpen}

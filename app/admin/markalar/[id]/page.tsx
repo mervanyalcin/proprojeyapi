@@ -13,7 +13,6 @@ import Loading from '@/app/components/Loading';
 const page = ({ params }: { params: Promise<{ id: string }> }) => {
   const [currentBrand, setCurrentBrand] = useState<Brandings>();
   const [isLoading, setIsLoading] = useState(true);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([])
 
 
   const { id } = use(params);
@@ -30,18 +29,11 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
       name: currentBrand?.name,
       color: currentBrand?.color,
       id: currentBrand?.id,
-      images: currentBrand?.imageURL,
     }
   });
   const selectedColor = watch('color');
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files) {
-      const urls = Array.from(files).map(file => URL.createObjectURL(file))
-      setPreviewUrls(urls)
-    }
-  }
+
 
   const getCurrentBrand = useCallback(async () => {
     setIsLoading(true)
@@ -137,51 +129,6 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
               {errors.name.message as string}
             </p>
           )}
-        </div>
-
-        <div>
-          <label htmlFor="images" className="block text-sm font-bold">
-            Proje Görselleri
-          </label>
-          <input
-            id="images"
-            type="file"
-            accept="image/*"
-            {...register("images", { required: true })}
-            onChange={handleImageChange}
-            className="mt-1 block w-full"
-          />
-          {errors.images && (
-            <p className="text-red-500 mt-2">En az bir görsel yüklemelisiniz</p>
-          )}
-        </div>
-
-        {
-          previewUrls.length === 0 && (
-            <div className="w-40 h-40 overflow-hidden">
-              <Image
-                src={currentBrand?.imageURL[0] as string}
-                alt={`Preview`}
-                width={500}
-                height={500}
-                className="object-cover rounded-md w-full h-full"
-              />
-            </div>
-          )
-        }
-
-        {/* Resim önizleme */}
-        <div className="grid grid-cols-3 gap-4 mt-4">
-          {previewUrls.map((url, index) => (
-            <div key={index} className="relative aspect-square">
-              <Image
-                src={url}
-                alt={`Preview ${index + 1}`}
-                fill
-                className="object-cover rounded-md"
-              />
-            </div>
-          ))}
         </div>
 
         {/* Renk Seçici */}

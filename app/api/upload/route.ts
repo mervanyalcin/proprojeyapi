@@ -18,8 +18,7 @@ export async function POST(req: Request) {
 
     const filepath = await saveFile(file)
     return NextResponse.json({ url: filepath })
-  } catch (error) {
-    console.error('[UPLOAD_ERROR]', error)
+  } catch (error) { 
     return new NextResponse("Internal error", { status: 500 })
   }
 }

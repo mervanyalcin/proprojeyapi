@@ -1,34 +1,58 @@
 "use client";
 
+import { convertToLatinSlug } from '@/utils/functions';
 import axios from 'axios';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
 const BrandForm = () => {
   const router = useRouter();
+  const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
     watch,
   } = useForm<FieldValues>({
     defaultValues: {
       name: '',
-      color: '#3B82F6' // Varsayılan mavi renk
+      images: FileList,
+      color: '#3B82F6'
     }
   });
-
   const selectedColor = watch('color');
 
-  const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    console.log(data)
-    try {
-      const response = axios.post("/api/brandings/create", data)
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files) {
+      const urls = Array.from(files).map(file => URL.createObjectURL(file))
+      setPreviewUrls(urls)
+    }
+  }
 
+  const onSubmit = async (data: FieldValues) => {
+    try {
+      // Resimleri yükle
+      const imageUrls = await Promise.all(
+        Array.from(data.images).map(async (image) => {
+          const formData = new FormData()
+          formData.append('file', image as File)
+          const response = await axios.post('/api/upload', formData)
+          return response.data.url
+        })
+      )
+
+      const url = convertToLatinSlug(data.name)
+      const newData = { ...data, url: url, imageURL: imageUrls }
+      const response = axios.post("/api/brandings/create", newData)
       response.then((res) => {
-        toast.success("Marka eklendi", {})
+        toast.success("Markayı başarıyla eklediniz", {})
+        reset()
+        // setPreviewUrls([])
       }).then(() => {
         router.push("/admin/markalar")
       })
@@ -74,6 +98,40 @@ const BrandForm = () => {
             </p>
           )}
         </div>
+
+        <div>
+          <label htmlFor="images" className="block text-sm font-bold">
+            Marka fotoğrafı
+          </label>
+          <input
+            id="images"
+            type="file"
+            accept="image/*"
+            {...register("images", { required: true })}
+            onChange={handleImageChange}
+            className="mt-1 block w-full"
+          />
+          {errors.images && (
+            <p className="text-red-500 mt-2">En az bir görsel yüklemelisiniz</p>
+          )}
+        </div>
+
+
+        {/* Resim önizleme */}
+        {previewUrls.length > 0 && (
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            {previewUrls.map((url, index) => (
+              <div key={index} className="relative aspect-square">
+                <Image
+                  src={url}
+                  alt={`Preview ${index + 1}`}
+                  fill
+                  className="object-cover rounded-md"
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Renk Seçici */}
         <div className="space-y-2">

@@ -3,11 +3,11 @@
 import React from 'react'
 import Container from './components/Container'
 import AboutUs from './components/homepage/AboutUs'
-import Faq from './components/homepage/Faq'
-import Brandings from './components/homepage/Brandings'
+import Faq from './components/homepage/Faq' 
 import Catalogs from './components/homepage/Catalogs'
 import Dealer from './components/homepage/Dealer'
 import Contact from './components/homepage/Contact'
+import PageBrandings from './components/homepage/Brandings'
 import Link from 'next/link'
 
 const page = () => {
@@ -26,7 +26,7 @@ const page = () => {
       <Container>
         <AboutUs />
         <Faq />
-        <Brandings />
+        <PageBrandings />
         <Catalogs />
         <Dealer />
         <Contact />

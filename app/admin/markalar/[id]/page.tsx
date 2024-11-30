@@ -6,10 +6,13 @@ import { toast } from 'react-toastify';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { Brandings } from '@prisma/client';
+import Image from 'next/image';
+import { convertToLatinSlug } from '@/utils/functions';
 
 const page = ({ params }: { params: Promise<{ id: string }> }) => {
   const [currentBrand, setCurrentBrand] = useState<Brandings>();
   const [isLoading, setIsLoading] = useState(true);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([])
 
 
   const { id } = use(params);
@@ -25,10 +28,19 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
     defaultValues: {
       name: currentBrand?.name,
       color: currentBrand?.color,
-      id: currentBrand?.id
+      id: currentBrand?.id,
+      images: currentBrand?.imageURL,
     }
   });
   const selectedColor = watch('color');
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files) {
+      const urls = Array.from(files).map(file => URL.createObjectURL(file))
+      setPreviewUrls(urls)
+    }
+  }
 
   const getCurrentBrand = useCallback(async () => {
     setIsLoading(true)
@@ -57,7 +69,19 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
-      const response = await axios.post("/api/brandings/update", data)
+      // Resimleri yükle
+      const imageUrls = await Promise.all(
+        Array.from(data.images).map(async (image) => {
+          const formData = new FormData()
+          formData.append('file', image as File)
+          const response = await axios.post('/api/upload', formData)
+          return response.data.url
+        })
+      )
+
+      const url = convertToLatinSlug(data.name)
+      const newData = { ...data, imageURL: imageUrls, url: url }
+      const response = await axios.post("/api/brandings/update", newData)
       if (response.status === 200) {
         toast.success("Marka güncellendi", {})
         router.push("/admin/markalar")
@@ -92,12 +116,12 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
       </div>
 
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y- mt-8 flex flex-col gap-y-4">
         {/* Marka Adı */}
         <div className="space-y-2">
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm text-gray-700 font-bold"
           >
             Marka Adı
           </label>
@@ -122,6 +146,51 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
               {errors.name.message as string}
             </p>
           )}
+        </div>
+
+        <div>
+          <label htmlFor="images" className="block text-sm font-bold">
+            Proje Görselleri
+          </label>
+          <input
+            id="images"
+            type="file"
+            accept="image/*"
+            {...register("images", { required: true })}
+            onChange={handleImageChange}
+            className="mt-1 block w-full"
+          />
+          {errors.images && (
+            <p className="text-red-500 mt-2">En az bir görsel yüklemelisiniz</p>
+          )}
+        </div>
+
+        {
+          previewUrls.length === 0 && (
+            <div className="w-40 h-40 overflow-hidden">
+              <Image
+                src={currentBrand?.imageURL[0] as string}
+                alt={`Preview`}
+                width={500}
+                height={500}
+                className="object-cover rounded-md w-full h-full"
+              />
+            </div>
+          )
+        }
+
+        {/* Resim önizleme */}
+        <div className="grid grid-cols-3 gap-4 mt-4">
+          {previewUrls.map((url, index) => (
+            <div key={index} className="relative aspect-square">
+              <Image
+                src={url}
+                alt={`Preview ${index + 1}`}
+                fill
+                className="object-cover rounded-md"
+              />
+            </div>
+          ))}
         </div>
 
         {/* Renk Seçici */}

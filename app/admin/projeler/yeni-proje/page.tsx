@@ -63,7 +63,6 @@ const ProjectForm = () => {
         })
       )
 
-
       // Projeyi veritabanına kaydet
       await axios.post('/api/projects/create', {
         name: data.name,

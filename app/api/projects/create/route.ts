@@ -23,8 +23,7 @@ export async function POST(req: Request) {
         })
 
         return NextResponse.json(project)
-    } catch (error) {
-        console.error('[PROJECTS_POST]', error)
+    } catch (error) { 
         return new NextResponse("Internal error", { status: 500 })
     }
 }

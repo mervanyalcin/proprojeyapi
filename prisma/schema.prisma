@@ -34,11 +34,15 @@ model County {
 }
 
 model Brandings {
-    id        String     @id @default(auto()) @map("_id") @db.ObjectId
-    createdAt DateTime   @default(now())
-    name      String
-    color     String
-    Projects  Projects[]
+    id          String     @id @default(auto()) @map("_id") @db.ObjectId
+    createdAt   DateTime   @default(now())
+    name        String
+    color       String
+    isActive    Boolean    @default(true)
+    url         String
+    orderNumber Int
+    imageURL    String[]
+    Projects    Projects[]
 }
 
 model Projects {
@@ -46,6 +50,7 @@ model Projects {
     createdAt   DateTime  @default(now())
     name        String
     description String
+    isActive    Boolean   @default(true)
     photoLinks  String[]
     City        City      @relation(fields: [cityId], references: [id])
     cityId      String    @db.ObjectId

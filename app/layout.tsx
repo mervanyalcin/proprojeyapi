@@ -49,7 +49,7 @@ export default function RootLayout({
         <div className="bg-themeColorSec py-12" id='footer'>
 
           <Container>
-            <div className="flex justify-center text-themeColorThird font-bold">
+            <div className="flex justify-center text-themeColorThird font-bold bg-themeColorOne px-10 py-10 rounded-3xl">
               <p className="">Copyright © PROPROJEYAPI. Tasarımcısı Mervan Yalçın</p>
             </div>
           </Container>

@@ -11,6 +11,7 @@ import { MdError, MdErrorOutline, MdMailOutline } from 'react-icons/md'
 import { toast } from 'react-toastify'
 import Container from '../components/Container'
 import Link from 'next/link'
+import Heading from '../components/Heading'
 
 const Contact = () => {
   const router = useRouter()
@@ -43,14 +44,16 @@ const Contact = () => {
 
   return (
     <Container>
-      <div className="">
 
-        <div className="w-full  flex-col bg-themeColorOne rounded-3xl overflow-hidden" id='iletisim'>
+        <div className="w-full flex-col bg-themeColorOne rounded-3xl overflow-hidden px-20 py-20" id='iletisim'>
+
+        <Heading text='iletişim' />
+
 
           <div className="w-full flex">
-            <div className="w-1/2 px-20 py-20 text-themeColorThird">
+            <div className="w-1/2 text-themeColorThird">
 
-              <p className='text-5xl font-bold font-caveat mb-8'>Bize merhaba deyin,</p>
+              <p className='text-3xl font-bold font-caveat mb-8'>Bize merhaba deyin,</p>
 
               <div className='flex flex-col gap-y-4'>
                 <div className="flex items-center gap-x-4">
@@ -100,12 +103,12 @@ const Contact = () => {
 
             </div>
 
-            <div className="w-1/2 px-20 py-20 text-themeColorThird">
-              <form onSubmit={handleSubmit(onSubmit)} className=''>
-                <p className='text-5xl font-bold font-caveat mb-8'>Bize bir mesaj bırakın</p>
+            <div className="w-1/2 text-themeColorThird">
+              <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-y-4'>
+                <p className='text-3xl font-bold font-caveat mb-8'>Bize bir mesaj bırakın</p>
 
-                <div className='mb-5'>
-                  <label htmlFor="fullName" className='text-sm font-bold block mb-2'>Adınız</label>
+                <div className=''>
+                  <label htmlFor="fullName" className='text-sm font-bold block '>Adınız</label>
                   <input type="text" id='fullName' maxLength={16} minLength={3} {...register("fullName", {
                     minLength: {
                       value: 3,
@@ -120,7 +123,7 @@ const Contact = () => {
 
                   {
                     errors.fullName && (
-                      <p className='text-xs text-black mt-1 bg-red-500 p-1'>
+                      <p className='text-xs text-black mt-1  p-1'>
                         {errors.fullName?.message as string}
                       </p>
                     )
@@ -128,8 +131,8 @@ const Contact = () => {
 
                 </div>
 
-                <div className='mb-5'>
-                  <label htmlFor="phoneNumber" className='text-sm font-bold block mb-2'>Telefon Numaranız</label>
+                <div className=''>
+                  <label htmlFor="phoneNumber" className='text-sm font-bold block '>Telefon Numaranız</label>
                   <input type="text" id='phoneNumber' {...register("phoneNumber", {
                     pattern: {
                       value: /^0{1}\d{3}\d{3}\d{4}$/,
@@ -143,20 +146,20 @@ const Contact = () => {
                     required: "Telefon boş bırakılamaz",
                   })} className='border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:outline-none' placeholder='Telefon numaranız' />
                   {errors.phoneNumber && (
-                    <p className=" text-xs text-black mt-1 bg-red-500 p-1 ">
+                    <p className=" text-xs text-black mt-1  p-1 ">
                       {errors.phoneNumber?.message as string}
                     </p>
                   )}
                 </div>
 
-                <div className="mb-5">
-                  <label htmlFor="message" className="block mb-2 text-sm font-medium">Mesajınız</label>
+                <div className="">
+                  <label htmlFor="message" className="block  text-sm font-medium">Mesajınız</label>
                   <textarea id="message" {...register("message", {
                     required: "Mesaj alanı boş bırakılamaz"
                   })} rows={5} className='border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5 focus:outline-none' placeholder='Mesajınız'></textarea>
 
                   {errors.message && (
-                    <p className=" text-xs text-black mt-1 bg-red-500 p-1">
+                    <p className=" text-xs text-black mt-1  p-1">
                       {errors.message?.message as string}
                     </p>
                   )}
@@ -180,7 +183,6 @@ const Contact = () => {
           <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d47886.647937373506!2d33.78816955!3d41.3976415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4084fa1240163891%3A0xd819b0a02911d532!2sKastamonu%2C%20Kastamonu%20Merkez%2FKastamonu!5e0!3m2!1str!2str!4v1729856895863!5m2!1str!2str" allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade" className='w-full min-h-full h-[700px]'></iframe>
         </div>
 
-      </div>
     </Container>
   )
 }

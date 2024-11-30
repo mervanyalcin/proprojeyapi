@@ -24,9 +24,7 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('E-posta adresi veya şifre yanlış');
-        }
-
-        console.log(credentials.email)
+        } 
 
         const user = await prisma.user.findUnique({
           where: {

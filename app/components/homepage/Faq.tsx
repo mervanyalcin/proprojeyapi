@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Container from '../Container'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import Heading from '../Heading';
 
 const Faq = () => {
 
@@ -49,88 +50,53 @@ const Faq = () => {
 
     // Tıklanan div'in gizli kısmını açma/kapama
     const toggleDetails = (index: number) => {
-
         if (selectedIndex === index) {
             setSelectedIndex(120)
         } else {
             setSelectedIndex(index)
         }
-
-
-
         const newOpenDivs = [...openDivs];
         newOpenDivs[index] = !newOpenDivs[index]; // Tıklanan div'in durumunu tersine çevir
         setOpenDivs(newOpenDivs);
     };
 
     return (
-        <div className='py-20 my-12 bg-themeColorOne rounded-3xl'>
-            <Container>
-                <p className='text-5xl font-bold text-center font-cabin text-[#fff6bb] mb-4'>Sıkça Sorular Sorular</p>
-                <div className="relative px-20">
-                    {/* Divlerin gösterildiği bölüm */}
-                    <div className="flex space-x-4 overflow-x-auto">
-                        {displayedDivs.map((index) => (
-                            <div
-                                key={index}
-                                className="w-1/3 h-64 bg-white text-black flex flex-col items-center justify-center text-white rounded-lg cursor-pointer"
-                                onClick={() => toggleDetails(index)} // Tıklama olayını ekliyoruz
-                            >
-                                <div>{divsContent[index].title}</div>
-                                {/* Gizli div */}
+        <div className='py-10 my-12 bg-themeColorOne rounded-3xl'>
+            <div className="relative px-20">
 
-                            </div>
-                        ))}
-                    </div>
+                <Heading text='Sıkça Sorular Sorular' />
 
-                    {/* İleri ve geri butonları */}
-                    <div className="absolute top-1/2 left-0 transform -translate-y-1/2 p-2">
-                        <button
-                            onClick={goPrev}
-                            className="bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-600"
-                        >
-                            <FaArrowLeft />
-                        </button>
-                    </div>
-                    <div className="absolute top-1/2 right-0 transform -translate-y-1/2 p-2">
-                        <button
-                            onClick={goNext}
-                            className="bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-600"
-                        >
-                            <FaArrowRight />
-                        </button>
-                    </div>
-
-                    <div className="">
-
-                        {
-                            selectedIndex < totalDivs && (
-                                <div className="mt-4 w-full p-2 bg-gray-700 text-white rounded-md">
-                                    {divsContent[selectedIndex].description}
-                                </div>
-                            )
-                        }
-
-                    </div>
-
-
-
-                    {/* {openDivs.map((isOpen, index) => (
-                        <div key={index}> 
-                            {
-                                openDivs[index] && (
-                                    <div className="mt-4 w-full p-2 bg-gray-700 text-white rounded-md">
-                                         {divsContent[index].description}
-                                    </div>
-                                )
-                            }
+                <div className="flex space-x-4 overflow-x-auto">
+                    {displayedDivs.map((index) => (
+                        <div key={index} className="w-1/3 h-64 bg-white text-black flex flex-col items-center justify-center rounded-lg cursor-pointer" onClick={() => toggleDetails(index)}                            >
+                            <div>{divsContent[index].title}</div>
                         </div>
-                    ))} */}
-
+                    ))}
                 </div>
 
+                <div className="absolute top-1/2 left-0 transform -translate-y-1/2 p-2">
+                    <button onClick={goPrev} className="bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-600">
+                        <FaArrowLeft />
+                    </button>
+                </div>
+                <div className="absolute top-1/2 right-0 transform -translate-y-1/2 p-2">
+                    <button onClick={goNext} className="bg-gray-800 text-white p-2 rounded-full shadow-lg hover:bg-gray-600"                        >
+                        <FaArrowRight />
+                    </button>
+                </div>
 
-            </Container>
+                <div className="">
+
+                    {
+                        selectedIndex < totalDivs && (
+                            <div className="mt-4 w-full p-2 bg-gray-700 text-white rounded-md">
+                                {divsContent[selectedIndex].description}
+                            </div>
+                        )
+                    }
+
+                </div>
+            </div>
         </div>
     )
 }

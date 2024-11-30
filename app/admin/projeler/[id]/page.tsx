@@ -50,8 +50,7 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
                 images: response.data.photoLinks
             })
             setSelectedCityId(response.data.cityId)
-            setSelectedCountyId(response.data.countyId)
-            console.log(response.data.photoLinks)
+            setSelectedCountyId(response.data.countyId) 
             setPreviewUrls(response.data.photoLinks)
         } catch (error) {
             toast.error("Sunucu hatası oluştu, Lütfen daha sonra tekrar deneyin", {

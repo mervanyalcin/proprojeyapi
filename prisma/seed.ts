@@ -5,11 +5,9 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient()
 
 async function abc() {
-	await prisma.brandings.updateMany({ 
-		data: {
-			createdAt: "2024-11-06T16:37:52.738+00:00"
-		}
-	});
+
+	
+ 
 }
 
 

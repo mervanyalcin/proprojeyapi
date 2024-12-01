@@ -1,12 +1,12 @@
 // app/api/files/route.ts
 import { NextResponse } from 'next/server';
-import { deleteFile, getUploadedFiles } from '@/lib/utils';
+import { deleteFile, getUploadedFiles } from '@/utils/utils';
 
 export async function GET(request: Request) {
     try {
-        // URL'den search parametresini al
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search') || '';
+        // URL'den search parametresini al
 
         const files = await getUploadedFiles(search);
         return NextResponse.json({ files });

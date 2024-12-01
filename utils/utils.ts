@@ -3,13 +3,13 @@ import { FileType } from '@/app/types'
 import fs from 'fs'
 import path from 'path'
 
-export const saveFile = async (file: File): Promise<string> => {
+export const saveFile = async (file: File, folderName: string): Promise<string> => {
   const bytes = await file.arrayBuffer()
   const buffer = Buffer.from(bytes)
 
   // Benzersiz dosya adı oluştur
   const filename = `${Date.now()}-${file.name}`
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+  const uploadDir = path.join(process.cwd(), 'public', `uploads/${folderName}`)
 
   // uploads klasörünü kontrol et ve yoksa oluştur
   if (!fs.existsSync(uploadDir)) {
@@ -20,23 +20,26 @@ export const saveFile = async (file: File): Promise<string> => {
 
   // Dosyayı kaydet
   fs.writeFileSync(filepath, buffer)
-  return `/uploads/${filename}` // Public URL path'i döndür
+  return `${filename}` // Public URL path'i döndür
 }
 
 
-export const saveFilee = async (file: File): Promise<string> => {
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
+// export const saveFile = async (file: File): Promise<string> => {
+//   const bytes = await file.arrayBuffer();
+//   const buffer = Buffer.from(bytes);
 
-  const fileName = `${Date.now()}-${file.name}`;
-  const filePath = path.join(process.cwd(), 'public', 'uploads', fileName);
+//   const fileName = `${Date.now()}-${file.name}`;
 
-  await fs.promises.writeFile(filePath, buffer);
-  return `/uploads/${fileName}`;
-};
+
+//   const filePath = path.join(process.cwd(), 'public', `folderName`, fileName);
+
+
+//   await fs.promises.writeFile(filePath, buffer);
+//   return `${fileName}`;
+// };
 
 export const deleteFile = async (filePath: string) => {
-  const fullPath = path.join(process.cwd(), 'public', filePath);
+  const fullPath = path.join(process.cwd(), `public`, filePath);
   await fs.promises.unlink(fullPath);
 };
 
@@ -60,23 +63,25 @@ export const deleteFile = async (filePath: string) => {
 
 export const getUploadedFiles = async (searchTerm?: string): Promise<FileType[]> => {
   const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-  
+
   try {
     const files = await fs.promises.readdir(uploadsDir);
-    
+
     let fileList = files.map(filename => ({
       id: filename.split('-')[0],
-      name: filename.split('-').slice(1).join('-'),
+      name: filename,
       path: `/uploads/${filename}`,
       createdAt: new Date(parseInt(filename.split('-')[0]))
     }));
 
-    // Eğer arama terimi varsa, dosya adına göre filtreleme yap
+
+    // // Eğer arama terimi varsa, dosya adına göre filtreleme yap
     if (searchTerm) {
-      fileList = fileList.filter(file => 
+      fileList = fileList.filter(file =>
         file.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
+
 
     // Dosyaları tarihe göre sırala (en yeniden en eskiye)
     return fileList.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());

@@ -9,10 +9,21 @@ import { Brandings } from '@prisma/client';
 import Image from 'next/image';
 import { convertToLatinSlug } from '@/utils/functions';
 import Loading from '@/app/components/Loading';
+import { FileType } from '@/app/types';
+import { ConfirmationModal } from '@/app/components/modals/ConfimationModal';
 
 const page = ({ params }: { params: Promise<{ id: string }> }) => {
   const [currentBrand, setCurrentBrand] = useState<Brandings>();
   const [isLoading, setIsLoading] = useState(true);
+
+
+  const [files, setFiles] = useState<FileType[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileToDelete, setFileToDelete] = useState<FileType | null>(null);
+  const [showUploadConfirm, setShowUploadConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
 
   const { id } = use(params);
@@ -58,22 +69,15 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
     setValue("name", currentBrand?.name)
     setValue("color", currentBrand?.color)
     setValue("id", currentBrand?.id)
+
+    console.log(currentBrand?.imageURL[0].split('.')[0] as string)
+    setSearchTerm(currentBrand?.imageURL[0].split('.')[0] as string)
   }, [currentBrand])
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
-      // Resimleri yükle
-      const imageUrls = await Promise.all(
-        Array.from(data.images).map(async (image) => {
-          const formData = new FormData()
-          formData.append('file', image as File)
-          const response = await axios.post('/api/upload', formData)
-          return response.data.url
-        })
-      )
-
       const url = convertToLatinSlug(data.name)
-      const newData = { ...data, imageURL: imageUrls, url: url }
+      const newData = { ...data, imageURL: "imageUrls", url: url }
       const response = await axios.post("/api/brandings/update", newData)
       if (response.status === 200) {
         toast.success("Marka güncellendi", {})
@@ -81,6 +85,79 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
       }
     } catch (error) {
       toast.error("Sunucu hatası oluştu, Lütfen daha sonra tekrar deneyin", {})
+    }
+  };
+
+  const fetchFiles = async (search?: string) => {
+    try {
+      setIsLoading(true);
+      const response = await axios.get('/api/files', {
+        params: { search: search }
+      });
+      setFiles(response.data.files);
+    } catch (error) {
+      console.error('Error fetching files:', error);
+      alert('Dosyalar yüklenirken hata oluştu!');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Sayfa yüklendiğinde ve arama terimi değiştiğinde dosyaları getir
+  useEffect(() => {
+    fetchFiles(searchTerm);
+  }, [searchTerm]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return;
+    setSelectedFile(e.target.files[0]);
+    setShowUploadConfirm(true);
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const response = await axios.post('/api/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.success) {
+        await fetchFiles(searchTerm);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Dosya yükleme hatası!');
+    } finally {
+      setIsUploading(false);
+      setSelectedFile(null);
+      setShowUploadConfirm(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!fileToDelete) return;
+
+    try {
+      const response = await axios.delete('/api/files', {
+        data: { filePath: fileToDelete.path }
+      });
+
+      if (response.data.success) {
+        await fetchFiles(searchTerm);
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Dosya silme hatası!');
+    } finally {
+      setFileToDelete(null);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -131,6 +208,61 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
           )}
         </div>
 
+        <div className="mb-6 space-y-4">
+          {/* Dosya Yükleme */}
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-900">
+              Fotoğraf Yükle
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileSelect}
+              disabled={isUploading}
+              className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none p-2"
+            />
+          </div>
+        </div>
+
+        {/* Yükleme durumu */}
+        {isLoading ? (
+          <div className="p-4 text-center">Dosyalar yükleniyor...</div>
+        ) : files.length === 0 ? (
+          <p className="text-gray-500 text-center">
+            {searchTerm
+              ? 'Aramanızla eşleşen fotoğraf bulunamadı.'
+              : 'Henüz yüklenmiş fotoğraf bulunmuyor.'}
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {files.map((file) => (
+              <div key={file.id} className="relative group border rounded-lg p-2">
+                <Image
+                  src={file.path}
+                  alt={file.name}
+                  width={300}
+                  height={200}
+                  className="rounded-lg object-cover w-full h-48"
+                />
+                <button
+                  onClick={() => {
+                    setFileToDelete(file);
+                    setShowDeleteConfirm(true);
+                  }}
+                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  Sil
+                </button>
+                <p className="mt-2 text-sm text-gray-600">{file.name}</p>
+                <p className="text-xs text-gray-400">
+                  {new Date(file.createdAt).toLocaleDateString('tr-TR')}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+
         {/* Renk Seçici */}
         <div className="space-y-2">
           <label
@@ -170,6 +302,23 @@ const page = ({ params }: { params: Promise<{ id: string }> }) => {
           Markayı Güncelle
         </button>
       </form>
+
+      {/* Onay Modalları */}
+      <ConfirmationModal
+        isOpen={showUploadConfirm}
+        onClose={() => setShowUploadConfirm(false)}
+        onConfirm={handleUpload}
+        title="Fotoğraf Yükleme Onayı"
+        message="Bu fotoğrafı yüklemek istediğinize emin misiniz?"
+      />
+
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Fotoğraf Silme Onayı"
+        message="Bu fotoğrafı silmek istediğinize emin misiniz?"
+      />
 
 
     </div>

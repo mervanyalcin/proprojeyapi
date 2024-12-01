@@ -4,8 +4,8 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import axios from 'axios';
+import { FileType } from '@/app/types';  
 import { ConfirmationModal } from './modals/ConfimationModal';
-import { FileType } from '../types';
 
 export default function FileUploader() {
   const [files, setFiles] = useState<FileType[]>([]);
@@ -15,16 +15,15 @@ export default function FileUploader() {
   const [fileToDelete, setFileToDelete] = useState<FileType | null>(null);
   const [showUploadConfirm, setShowUploadConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Sayfa yüklendiğinde mevcut dosyaları getir
-  useEffect(() => {
-    fetchFiles();
-  }, []);
-
-  const fetchFiles = async () => {
+  // Dosyaları getir
+  const fetchFiles = async (search?: string) => {
     try {
       setIsLoading(true);
-      const response = await axios.get('/api/files');
+      const response = await axios.get('/api/files', {
+        params: { search }
+      });
       setFiles(response.data.files);
     } catch (error) {
       console.error('Error fetching files:', error);
@@ -32,6 +31,15 @@ export default function FileUploader() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Sayfa yüklendiğinde ve arama terimi değiştiğinde dosyaları getir
+  useEffect(() => {
+    fetchFiles(searchTerm);
+  }, [searchTerm]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +50,7 @@ export default function FileUploader() {
 
   const handleUpload = async () => {
     if (!selectedFile) return;
-    
+
     setIsUploading(true);
     const formData = new FormData();
     formData.append('file', selectedFile);
@@ -53,10 +61,9 @@ export default function FileUploader() {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+
       if (response.data.success) {
-        // Dosya yüklendikten sonra listeyi güncelle
-        await fetchFiles();
+        await fetchFiles(searchTerm);
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -68,11 +75,6 @@ export default function FileUploader() {
     }
   };
 
-  const initiateDelete = (file: FileType) => {
-    setFileToDelete(file);
-    setShowDeleteConfirm(true);
-  };
-
   const handleDelete = async () => {
     if (!fileToDelete) return;
 
@@ -80,10 +82,9 @@ export default function FileUploader() {
       const response = await axios.delete('/api/files', {
         data: { filePath: fileToDelete.path }
       });
-      
+
       if (response.data.success) {
-        // Dosya silindikten sonra listeyi güncelle
-        await fetchFiles();
+        await fetchFiles(searchTerm);
       }
     } catch (error) {
       console.error('Delete error:', error);
@@ -94,27 +95,47 @@ export default function FileUploader() {
     }
   };
 
-  if (isLoading) {
-    return <div className="p-4">Dosyalar yükleniyor...</div>;
-  }
-
   return (
     <div className="p-4">
-      <div className="mb-4">
-        <label className="block mb-2 text-sm font-medium text-gray-900">
-          Fotoğraf Yükle
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileSelect}
-          disabled={isUploading}
-          className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none p-2"
-        />
+      <div className="mb-6 space-y-4">
+        {/* Dosya Yükleme */}
+        <div>
+          <label className="block mb-2 text-sm font-medium text-gray-900">
+            Fotoğraf Yükle
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            disabled={isUploading}
+            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none p-2"
+          />
+        </div>
+
+        {/* Arama */}
+        <div>
+          <label className="block mb-2 text-sm font-medium text-gray-900">
+            Fotoğraf Ara
+          </label>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={handleSearch}
+            placeholder="Fotoğraf adına göre ara..."
+            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 p-2"
+          />
+        </div>
       </div>
 
-      {files.length === 0 ? (
-        <p className="text-gray-500">Henüz yüklenmiş fotoğraf bulunmuyor.</p>
+      {/* Yükleme durumu */}
+      {isLoading ? (
+        <div className="p-4 text-center">Dosyalar yükleniyor...</div>
+      ) : files.length === 0 ? (
+        <p className="text-gray-500 text-center">
+          {searchTerm
+            ? 'Aramanızla eşleşen fotoğraf bulunamadı.'
+            : 'Henüz yüklenmiş fotoğraf bulunmuyor.'}
+        </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {files.map((file) => (
@@ -127,7 +148,10 @@ export default function FileUploader() {
                 className="rounded-lg object-cover w-full h-48"
               />
               <button
-                onClick={() => initiateDelete(file)}
+                onClick={() => {
+                  setFileToDelete(file);
+                  setShowDeleteConfirm(true);
+                }}
                 className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 Sil
@@ -141,6 +165,7 @@ export default function FileUploader() {
         </div>
       )}
 
+      {/* Onay Modalları */}
       <ConfirmationModal
         isOpen={showUploadConfirm}
         onClose={() => setShowUploadConfirm(false)}

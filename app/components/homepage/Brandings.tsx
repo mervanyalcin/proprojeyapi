@@ -39,7 +39,7 @@ const PageBrandings = () => {
                                     {brandingsItem.name}
                                 </span>
                                 <span style={{ backgroundColor: brandingsItem.color }} className="absolute bottom-10 left-10 z-0 w-36 h-12 transition-all duration-300 group-hover:w-full group-hover:h-full group-hover:left-0 group-hover:bottom-0 "></span>
-                                <Image alt='' src={`${brandingsItem.imageURL}`} width={1500} height={1500} className='object-cover h-full w-full object-center' />
+                                <Image alt='' src={`/uploads/${brandingsItem.imageURL}`} width={1500} height={1500} className='object-cover h-full w-full object-center' />
                             </div>
                         </Link>
                     ))

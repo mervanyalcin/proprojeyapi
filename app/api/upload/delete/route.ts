@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { deleteFile } from '@/lib/utils';
+import { deleteFile } from '@/utils/utils';
 
 export async function DELETE(request: Request) {
   try {

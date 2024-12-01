@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "./components/navbar/Navbar";
 import Container from "./components/Container";
 import ToastProvider from "./ToastProvider";
+import SmoothScroll from "./components/LenisProvider";
 
 // const geistSans = localFont({
 //   src: "./fonts/GeistVF.woff",
@@ -38,11 +39,13 @@ export default function RootLayout({
       <body className={`text-cabin antialiased`}>
         <Navbar />
 
-        <ToastProvider>
-          <div className="pt-20 bg-themeColorSec">
-            {children}
-          </div>
-        </ToastProvider>
+        <SmoothScroll>
+          <ToastProvider>
+            <div className="pt-20 bg-themeColorSec">
+              {children}
+            </div>
+          </ToastProvider>
+        </SmoothScroll>
 
 
 

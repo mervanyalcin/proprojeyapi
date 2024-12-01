@@ -7,7 +7,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-toastify';
 import Container from '../components/Container';
 import Link from 'next/link';
-import { adminMenus } from '@/utils/menus';
 import { signOut } from 'next-auth/react';
 import Loading from '../components/Loading';
 
@@ -50,7 +49,15 @@ const layout = ({ children }: { children: React.ReactNode }) => {
   };
 
 
- 
+
+  const adminMenus = [
+    { title: 'Hesabım', url: '/admin', Icon: "", isViewTop: true },
+    { title: 'Markaları Yönet', url: '/admin/markalar', Icon: "", isViewTop: true },
+    { title: 'Projeleri Yönet', url: '/admin/projeler', Icon: "", isViewTop: true },
+    { title: 'Bayilik Başvuruları', url: '/admin/bayilik-basvurulari', Icon: "", isViewTop: true },
+    { title: 'Gelen Mesajlar', url: '/admin/mesajlar', Icon: "", isViewTop: true },
+  ]
+
 
   return (
     <Container>

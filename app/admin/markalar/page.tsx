@@ -100,16 +100,6 @@ const page = () => {
             </div>
             <div className="flex gap-3">
               <button
-                className="p-1 text-emerald-600 hover:text-emerald-800 rounded-full hover:bg-emerald-100"
-                title="fotoğrafı değiştir"
-                onClick={() => {
-                  setSelectedBranding(brand.id)
-                  setIsImageUpdateModalOpen(true)
-                }}
-              >
-                <MdAddAPhoto size={18} />
-              </button>
-              <button
                 className="p-1 text-blue-600 hover:text-blue-800 rounded-full hover:bg-blue-100"
                 title="Düzenle"
               >

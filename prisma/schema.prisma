@@ -41,7 +41,7 @@ model Brandings {
     isActive    Boolean    @default(true)
     url         String
     orderNumber Int
-    imageURL    String[]
+    imageURL    String
     Projects    Projects[]
 }
 

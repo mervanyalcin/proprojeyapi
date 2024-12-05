@@ -1,18 +1,14 @@
 "use client"
 
-import FileUploader from '@/app/components/FileUploader';
 import Loading from '@/app/components/Loading';
 import ConfirmModal from '@/app/components/modals/ConfirmModal';
-import UpdateBrandImage from '@/app/components/modals/UpdateBrandImageModal';
 import { Brandings } from '@prisma/client';
 import axios from 'axios';
 import Link from 'next/link';
-import React, { use, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react';
 import { BiPencil } from 'react-icons/bi';
 import { BsTrash2 } from 'react-icons/bs';
-import { FaEdit, FaPlus } from 'react-icons/fa';
-import { FaDeleteLeft } from 'react-icons/fa6';
-import { MdAddAPhoto } from 'react-icons/md';
+import { FaPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const page = () => {
